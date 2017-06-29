@@ -1,0 +1,21 @@
+{
+	"name": "dnadesign/silverstripe-elemental-archetypes",
+	"description": "Elemental Archetypes",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "element", "archetypes"],
+	"license": "BSD-3-Clause",
+	"authors": [{
+		"name": "John Milmine",
+		"email": "john.milmine@dna.co.nz"
+	}],
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"require": {
+		"silverstripe/framework": "^4.0",
+		"silverstripe/cms": "^4.0",
+		"dnadesign/silverstripe-elemental": "dev-master"
+	},
+	"extra": {
+		"installer-name": "elemental-archetypes"
+	}
+}

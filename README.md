@@ -1,1 +1,1 @@
-# silvertripe-elemental-recipe
+# silverstripe-elemental-archetypes
