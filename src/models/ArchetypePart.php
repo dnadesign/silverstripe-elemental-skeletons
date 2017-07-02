@@ -6,7 +6,8 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DropdownField;
 
 /**
- * Creates a recipe of elements that can be used
+ * Creates a archetype of elements that can be used as a template that is defined
+ * within the CMS
  */
 class ArchetypePart extends DataObject {
 
