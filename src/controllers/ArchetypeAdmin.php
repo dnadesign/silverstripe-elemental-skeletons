@@ -10,7 +10,7 @@ use SilverStripe\Admin\ModelAdmin;
 class ArchetypeAdmin extends ModelAdmin {
 
     private static $managed_models = array(
-        'SilverStripe\ElementalArchetypes\Models\Archetype'
+        'DNADesign\ElementalArchetypes\Models\Archetype'
     );
 
     private static $menu_title = 'Element Archetypes';

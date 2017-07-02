@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverStripe\ElementalArchetypes\Models;
+namespace DNADesign\ElementalArchetypes\Models;
 
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DropdownField;
