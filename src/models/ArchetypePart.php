@@ -25,6 +25,10 @@ class ArchetypePart extends DataObject {
 		'ElementName'
 	);
 
+	private static $field_labels = array(
+		'ElementName' => 'Element Name'
+	);
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
