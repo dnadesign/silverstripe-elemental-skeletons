@@ -2,7 +2,7 @@
 
 namespace DNADesign\ElementalArchetypes\Models;
 
-use DNADesign\Elemental\Extensions\ElementPageExtension;
+use DNADesign\Elemental\Extensions\ElementalPageExtension;
 
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Extensible;
@@ -39,8 +39,6 @@ class Archetype extends DataObject {
 		'PageTypeName' => 'Page Type'
 	);
 
-
-
 	public static function getDecoratedBy($extension, $baseClass){
 		$classes = array();
 
@@ -54,7 +52,7 @@ class Archetype extends DataObject {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$pageTypes = self::getDecoratedBy(ElementPageExtension::class, Page::class);
+		$pageTypes = self::getDecoratedBy(ElementalPageExtension::class, Page::class);
 		$fields->removeByName('Sort');
 		$fields->replaceField('PageType', $pt = DropdownField::create('PageType', 'Which page type to use as the base', $pageTypes));
 		$pt->setEmptyString('Please choose...');
@@ -64,7 +62,7 @@ class Archetype extends DataObject {
 			$gfc = $gf->getConfig();
 			$gfc->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
 			$gfc->addComponent(new GridFieldOrderableRows('Sort'));
-			$fields->removeByName('Ingredients');
+			$fields->removeByName('Parts');
 			$fields->addFieldToTab('Root.Main', $gf);
 
 			$fields->addFieldToTab('Root.Main', new FormAction('create', 'Create new ' . $this->Title . ' page'));
