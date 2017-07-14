@@ -7,14 +7,14 @@ use SilverStripe\Admin\ModelAdmin;
 /**
  * @package elemental
  */
-class ArchetypeAdmin extends ModelAdmin {
+class SkeletonAdmin extends ModelAdmin {
 
     private static $managed_models = array(
-        'DNADesign\ElementalArchetypes\Models\Archetype'
+        'DNADesign\ElementalSkeletons\Models\Skeleton'
     );
 
-    private static $menu_title = 'Element Archetypes';
+    private static $menu_title = 'Element Skeletons';
 
-    private static $url_segment = 'elemental-archetypes';
+    private static $url_segment = 'elemental-skeletons';
 
 }

@@ -1,23 +1,23 @@
 <?php
 
-namespace DNADesign\ElementalArchetypes\Models;
+namespace DNADesign\ElementalSkeletons\Models;
 
-use DNADesign\Elemental\Extensions\ElementalPageExtension;
+use DNADesign\Elemental\Extensions\ElementalAreasExtension;
 
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
-use SilverStripe\GridFieldExtensions\GridFieldOrderableRows;
 use SilverStripe\ORM\DataObject;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 use Page;
 
 /**
- * Creates a Archetype of elements that can be used to setup a page
+ * Creates a Skeleton of elements that can be used to setup a page
  */
-class Archetype extends DataObject {
+class Skeleton extends DataObject {
 
 	private static $db = array(
 		'Title' => 'Varchar',
@@ -25,10 +25,10 @@ class Archetype extends DataObject {
 	);
 
 	private static $has_many = array(
-		'Parts' => ArchetypePart::class
+		'Parts' => SkeletonPart::class
 	);
 
-	private static $table_name = 'ElementArchetype';
+	private static $table_name = 'ElementSkeletons';
 
 	private static $summary_fields = array(
 		'Title',
@@ -52,11 +52,11 @@ class Archetype extends DataObject {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$pageTypes = self::getDecoratedBy(ElementalPageExtension::class, Page::class);
+		$pageTypes = self::getDecoratedBy(ElementalAreasExtension::class, Page::class);
 		$fields->removeByName('Sort');
 		$fields->replaceField('PageType', $pt = DropdownField::create('PageType', 'Which page type to use as the base', $pageTypes));
 		$pt->setEmptyString('Please choose...');
-		$pt->setRightTitle('This will determine which elements are possible to add to the recipe');
+		$pt->setRightTitle('This will determine which elements are possible to add to the skeleton');
 		if ($this->isinDB()) {
 			$gf = $fields->fieldByName('Root.Parts.Parts');
 			$gfc = $gf->getConfig();
