@@ -65,7 +65,7 @@ class Skeleton extends DataObject {
 			$fields->removeByName('Parts');
 			$fields->addFieldToTab('Root.Main', $gf);
 
-			$fields->addFieldToTab('Root.Main', new FormAction('create', 'Create new ' . $this->Title . ' page'));
+			$fields->addFieldToTab('Root.Main', FormAction::create('create', 'Create new ' . $this->Title . ' page')->addExtraClass('btn btn-success font-icon-plus-circled')->setUseButtonTag(true));
 		}
 		return $fields;
 	}
