@@ -5,11 +5,8 @@ namespace DNADesign\ElementalSkeletons\Models;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DropdownField;
 use DNADesign\Elemental\Extensions\ElementalAreasExtension;
+use SilverStripe\Security\Permission;
 
-/**
- * Creates a archetype of elements that can be used as a template that is defined
- * within the CMS
- */
 class SkeletonPart extends DataObject {
 
 	private static $db = array(
@@ -35,7 +32,8 @@ class SkeletonPart extends DataObject {
 		$fields = parent::getCMSFields();
 
 		$pageType = $this->Skeleton()->PageType;
-		$elementTypes = ElementalAreasExtension::get_available_types_for_class($pageType);
+		$page = new $pageType();
+		$elementTypes = $page->getElementalTypes();
 
 		$fields->removeByName('Sort');
 		$fields->removeByName('SkeletonID');
@@ -45,6 +43,26 @@ class SkeletonPart extends DataObject {
 	}
 
 	public function ElementName() {
-		return singleton($this->ElementType)->getElementType();
+		return singleton($this->ElementType)->getType();
 	}
+
+    public function canView($member = null)
+    {
+        return Permission::checkMember($member, 'VIEW_SKELETONS');
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::checkMember($member, 'EDIT_SKELETONS');
+    }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return $this->canEdit($member);
+    }
+
+    public function canDelete($member = null)
+    {
+        return $this->canEdit($member);
+    }
 }

@@ -10,14 +10,23 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 use Page;
 
 /**
- * Creates a Skeleton of elements that can be used to setup a page
+ * Creates a skeleton of elements that can help bootstrap pages with blank elements.
+ *
+ * A Skeleton consists of a title (visible only in the CMS) and a link to a page type. Each page type can be assigned
+ * only one {@link Skeleton} object. Each skeleton contains one or more {@link SkeletonPart} objects.
+ *
+ * Whenever any new page is created, the list of {@link Skeleton} objects are checked to see if there is one that 
+ * matches the page type that was created. If one is found, any linked {@link SkeletonPart} are instantiated and added 
+ * to the newly-created page.
  */
-class Skeleton extends DataObject {
+class Skeleton extends DataObject implements PermissionProvider {
 
 	private static $db = array(
 		'Title' => 'Varchar',
@@ -39,20 +48,36 @@ class Skeleton extends DataObject {
 		'PageTypeName' => 'Page Type'
 	);
 
-	public static function getDecoratedBy($extension, $baseClass){
-		$classes = array();
 
-		foreach(ClassInfo::subClassesFor($baseClass) as $className) {
-			if (Extensible::has_extension($className, $extension)){
-				$classes[$className] = singleton($className)->singular_name();
+    /**
+     * Get all classes that have the given extension, that don't already have a {@link Skeleton} associated with them.
+     *
+     * If the current {@link Skeleton} has a page type set already, that is included in the list so it can remain saved.
+     *
+     * @param string $extension The extension to look for
+     * @param string $baseClass The base class to search for extensions on
+     * @return array All classes that are decorated by the given extension
+     */
+	public function getDecoratedBy($extension, $baseClass) {
+		$classes = array();
+		$existingSkeletons = Skeleton::get();
+
+		foreach (ClassInfo::subClassesFor($baseClass) as $className) {
+			$skeletonExistsForClass = !is_null($existingSkeletons->filter('PageType', $className)->first());
+
+		    if (Extensible::has_extension($className, $extension)) {
+				if ($this->PageType == $className || !$skeletonExistsForClass) {
+                    $classes[$className] = singleton($className)->singular_name();
+                }
 			}
 		}
+
 		return $classes;
 	}
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$pageTypes = self::getDecoratedBy(ElementalAreasExtension::class, Page::class);
+		$pageTypes = $this->getDecoratedBy(ElementalAreasExtension::class, Page::class);
 		$fields->removeByName('Sort');
 		$fields->replaceField('PageType', $pt = DropdownField::create('PageType', 'Which page type to use as the base', $pageTypes));
 		$pt->setEmptyString('Please choose...');
@@ -64,14 +89,53 @@ class Skeleton extends DataObject {
 			$gfc->addComponent(new GridFieldOrderableRows('Sort'));
 			$fields->removeByName('Parts');
 			$fields->addFieldToTab('Root.Main', $gf);
-
-			$fields->addFieldToTab('Root.Main', FormAction::create('create', 'Create new ' . $this->Title . ' page')->addExtraClass('btn btn-success font-icon-plus-circled')->setUseButtonTag(true));
 		}
 		return $fields;
 	}
 
 	public function PageTypeName() {
-		return singleton($this->PageType)->singular_name();
+		if ($this->PageType) {
+            return singleton($this->PageType)->singular_name();
+        } else {
+		    return '';
+        }
 	}
 
+    public function canView($member = null)
+    {
+        return Permission::checkMember($member, 'VIEW_SKELETONS');
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::checkMember($member, 'EDIT_SKELETONS');
+    }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return $this->canEdit($member);
+    }
+    
+    public function canDelete($member = null)
+    {
+        return $this->canEdit($member);
+    }
+
+    public function providePermissions()
+    {
+        return [
+            'VIEW_SKELETONS' => [
+                'name' => 'View all elemental skeletons',
+                'category' => 'Elemental',
+                'help' => 'Allow viewing the skeletons for new pages, but do not allow editing of these skeletons',
+                'sort' => 100
+            ],
+            'EDIT_SKELETONS' => [
+                'name' => 'Edit all elemental skeletons',
+                'category' => 'Elemental',
+                'help' => 'Allow creation of new skeletons, as well as editing and deletion of existing skeletons',
+                'sort' => 200
+            ]
+        ];
+    }
 }
